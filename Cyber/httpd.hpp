@@ -95,24 +95,24 @@ namespace cyberweb
         void ServeFile(Connection &conn, string &path)
         {
             string suffix = path.substr(path.find_last_of('.') + 1);
-            struct stat filestat;
-            stat(path.c_str(), &filestat);
-
+            std::ifstream file(path.c_str(), std::ios::in | std::ios::binary);
+            // compute the size of file.
+            file.seekg(0, std::ios::end);
+            int file_size = file.tellg();
+            file.seekg(0, std::ios::beg);
+            // send header
             conn << "HTTP/1.1 200 OK\r\n"
                  << "connection: close\r\n"
-                //  << "content-type: " << CONTENTTYPE[suffix] << "\r\n"
-                 << "content-length: " << filestat.st_size << "\r\n"
+                 //  << "content-type: " << CONTENTTYPE[suffix] << "\r\n"
+                 << "content-length: " << file_size << "\r\n"
                  << "\r\n";
-            std::ifstream file(path.c_str(), std::ios::in | std::ios::binary);
-            int n = filestat.st_size;
-            while (true)
+            // Since the file the httpd send may not be text file,
+            // we regard all file as binary file.
+            // Thus, we use ifstream::read/Connection::Write instead of <<, >> and getline.
+            while ((file.rdstate() & std::ifstream::eofbit) == 0)
             {
-                int read_count = n >= BUFFSIZE - 1 ? BUFFSIZE : n + 1;
-                file.read(buff_, read_count);
-                conn.Write(buff_, read_count);
-                n -= (read_count - 1);
-                if (n <= 0)
-                    break;
+                file.read(buff_, BUFFSIZE);
+                conn.Write(buff_, file.gcount());
             }
             file.close();
         }

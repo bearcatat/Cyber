@@ -74,7 +74,7 @@ namespace cyberweb
             return *this;
         }
 
-        Connection &operator<<(long int &data)
+        Connection &operator<<(int &data)
         {
             std::string datastr = std::to_string(data);
             Write(datastr.c_str(), datastr.size());
