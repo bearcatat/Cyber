@@ -2,6 +2,7 @@
 #define CYBER_POLLER_H
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <map>
 
 namespace cyberweb
@@ -16,14 +17,14 @@ namespace cyberweb
     typedef std::function<void(int event)> PollEventCB;
     typedef std::function<void(bool success)> PollDelCB;
 
-    class Poller
+    class EventPoller
     {
     public:
-        typedef std::shared_ptr<Poller> Ptr;
+        typedef std::shared_ptr<EventPoller> Ptr;
         EventPoller();
         ~EventPoller();
 
-        static Poller &Instance();
+        static EventPoller *Instance();
 
         int AddEvent(int fd, int event, PollEventCB cb);
 
@@ -31,12 +32,16 @@ namespace cyberweb
 
         int ModifyEvent(int fd, int event);
 
-        void runLoop();
+        void RunLoop();
 
     private:
-        mutex lock_;
-        map<int, std::shared_ptr<PollEventCB>> event_map_;
+        static EventPoller *poller_;
+        int epoll_fd_;
+        std::mutex lock_;
+        std::map<int, std::shared_ptr<PollEventCB>> event_map_;
+        bool exit_flag_;
     };
+    EventPoller *EventPoller::poller_ = nullptr;
 } // namespace cyberweb
 
 #endif // CYBER_POLLER_H
