@@ -23,12 +23,12 @@ namespace cyberweb
 
         virtual std::string ToString() const
         {
-            return std::string(data(), size());
+            return std::string(data(), Size());
         }
 
         virtual size_t GetCapacity() const
         {
-            return size();
+            return Size();
         }
     };
 
@@ -40,7 +40,7 @@ namespace cyberweb
         typedef std::function<void(size_t size)> OnResult;
         friend class BufferList;
 
-        BufferSock(Buffer::Ptr ptr, sockaddr *addr = nullptr, int addr_len = 0, OnResult cb = nullptr);
+        BufferSock(Buffer::Ptr buffer, sockaddr *addr = nullptr, int addr_len = 0, OnResult cb = nullptr);
         ~BufferSock();
 
         char *Data() const override;
@@ -60,7 +60,7 @@ namespace cyberweb
     {
     public:
         typedef std::shared_ptr<BufferSock>;
-        BufferList(std::list<BufferSock::Ptr> &list);
+        BufferList(List<BufferSock::Ptr> &list);
         ~BufferList() {}
 
         bool Empty();
@@ -73,10 +73,10 @@ namespace cyberweb
 
     private:
         size_t iovec_off_ = 0;
-        size_t remain_size = 0;
+        size_t remain_size_ = 0;
         std::vector<iovec> iovec_;
-        std::list<BufferSock::Ptr> pkt_list;
-    }
+        List<BufferSock::Ptr> pkt_list_;
+    };
 } // namespace cyberweb
 
 #endif // CYBER_BUFFER_H
