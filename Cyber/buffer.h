@@ -14,6 +14,7 @@ namespace cyberweb
 {
     class Buffer : public noncopyable
     {
+    public:
         typedef std::shared_ptr<Buffer> Ptr;
         Buffer(){};
         virtual ~Buffer(){};
