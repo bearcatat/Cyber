@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <vector>
 #include <list>
+#include <string.h>
 
 #include "util.h"
 
@@ -31,6 +32,77 @@ namespace cyberweb
         {
             return Size();
         }
+    };
+
+    class BufferRaw : public Buffer
+    {
+    public:
+        using Ptr = std::shared_ptr<BufferRaw>;
+        static Ptr Create();
+        ~BufferRaw() override;
+        char *Data() const override
+        {
+            return data_;
+        }
+        size_t Size() const override
+        {
+            return size_;
+        }
+        void SetCapacity(size_t capacity)
+        {
+            if (_data)
+            {
+                do
+                {
+                    if (capacity > capacity_)
+                    {
+                        break;
+                    }
+                    else if (capacity < 2 * 1024 || 2 * capacity < capacity_)
+                    {
+                        return;
+                    }
+                } while (false);
+                delete[] data_;
+            }
+            data_ = new char[capacity];
+            capacity_ = capacity;
+        }
+        void SetSize(size_t size)
+        {
+            if (size > capacity_)
+            {
+                throw std::invalid_argument("BufferRaw::SetSize out of range");
+            }
+            size_ = size;
+        }
+        void assign(const char *data, size_t size = 0)
+        {
+            if (size <= 0)
+            {
+                size = strlen(data);
+            }
+            SetCapacity(size + 1);
+            memcpy(data_, data, size);
+            data_[size] = 0;
+            SetSize(size);
+        }
+        BufferRaw(size_t capacity = 0)
+        {
+            if (capacity)
+            {
+                SetCapacity(capacity);
+            }
+        }
+        BufferRaw(const char *data, size_t size = 0)
+        {
+            SetSize(data, size);
+        }
+
+    private:
+        size_t size_ = 0;
+        size_t capacity_ = 0;
+        char *data_ = nullptr;
     };
 
     class BufferList;
@@ -60,7 +132,7 @@ namespace cyberweb
     class BufferList : public noncopyable
     {
     public:
-        typedef std::shared_ptr<BufferSock>;
+        typedef std::shared_ptr<BufferList> Ptr;
         BufferList(List<BufferSock::Ptr> &list);
         ~BufferList() {}
 

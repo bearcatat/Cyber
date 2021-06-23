@@ -5,6 +5,8 @@
 #include <mutex>
 #include <map>
 
+#include "buffer.h"
+
 namespace cyberweb
 {
     typedef enum
@@ -34,8 +36,11 @@ namespace cyberweb
 
         void RunLoop();
 
+        BufferRaw::Ptr GetSharedBuffer();
+
     private:
         static EventPoller *poller_;
+        std::weak_ptr<BufferRaw> shared_buffer_;
         int epoll_fd_;
         std::mutex lock_;
         std::map<int, std::shared_ptr<PollEventCB>> event_map_;

@@ -5,6 +5,7 @@
 #include "sys/epoll.h"
 
 #define EPOLL_SIZE 1024
+#define SOCKET_DEFAULT_BUF_SIZE 2048
 
 #define ToEpoll(event) (((event)&EVENT_READ) ? EPOLLIN : 0) | (((event)&EVENT_WRITE) ? EPOLLOUT : 0) | (((event)&EVENT_ERROR) ? (EPOLLHUP | EPOLLERR) : 0) | (((event)&EVENT_LT) ? 0 : EPOLLET)
 
@@ -106,6 +107,18 @@ namespace cyberweb
                 }
             }
         }
+    }
+
+    BufferRaw::Ptr EventPoller::GetSharedBuffer()
+    {
+        BufferRaw::Ptr buffer = shared_buffer_.lock();
+        if (!buffer)
+        {
+            buffer = BufferRaw::Create();
+            buffer->SetCapacity(SOCKET_DEFAULT_BUF_SIZE + 1);
+            shared_buffer_ = buffer;
+        }
+        return buffer;
     }
 
 } // namespace cyberweb

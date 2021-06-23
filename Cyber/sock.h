@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include <atomic>
+#include <mutex>
 #include <sys/unistd.h>
 
 #include "util.h"
@@ -113,7 +114,7 @@ namespace cyberweb
 
         virtual void Connect(const string &ip, uint16_t port, OnErrorCB con_cb, float timeout_sec = 5);
 
-        virtual bool Listen(uint16_t port, int backlog = 1024);
+        virtual bool Listen(uint16_t port, const string &local_ip, int backlog = 1024);
 
         virtual void SetOnRead(OnReadCB cb);
         virtual void SetOnError(OnErrorCB cb);
@@ -124,8 +125,9 @@ namespace cyberweb
         ssize_t Send(const char *buf, size_t size = 0, sockaddr *addr = nullptr, socklen_t addr_len, bool try_flush = true);
         ssize_t Send(const std::string &buf, sockaddr *addr = nullptr, socklen_t addr_len = 0, bool try_flush = true);
         ssize_t Send(const Buffer::Ptr &buf, sockaddr *addr = nullptr, socklen_t addr_len = 0, bool try_flush = true);
-        virtual ssize_t Send(const BufferSock &buf, bool try_flush = true);
+        virtual ssize_t Send(const BufferSock::Ptr &buf, bool try_flush = true);
 
+        virtual void EmitError(const SockException &err) noexcept;
         virtual void EnableRecv(bool enabled);
         virtual int GetFD() const;
         virtual void SetTimeOutSecond(uint32_t second);
@@ -138,27 +140,42 @@ namespace cyberweb
         virtual uint64_t ElapsedTimeAfterFlushed();
 
     private:
+        SockFD::Ptr SetPeerSock(int fd);
         SockFD::Ptr MakeSock(int sock);
         int OnAccept(const SockFD::Ptr &sock, int event) noexcept;
         ssize_t OnRead(const SockFD::Ptr &sock) noexcept;
         void OnWriteAble(const SockFD::Ptr &sock);
         void OnConnected(const SockFD::Ptr &sock, const OnErrorCB &cb);
-        void OnFlushed(const SockFD::Ptr &pSock);
+        void OnFlushed(const SockFD::Ptr &p_sock);
         void StartWriteAbleEvent(const SockFD::Ptr &sock);
         void StopWriteAbleEvent(const SockFD::Ptr &sock);
         bool Listen(const SockFD::Ptr &sock);
-        bool FlushData(const SockFD::Ptr &sock);
+        bool FlushData(const SockFD::Ptr &sock, bool poller_thread);
         bool AttachEvent(const SockFD::Ptr &sock);
 
     private:
         int sock_flags_ = SOCKET_DEFAULE_FLAGS;
         uint32_t max_send_buffer_ms_ = SEND_TIME_OUT_SEC * 1000;
-        std::atomic<bool> enable_recv{true};
+        std::atomic<bool> enable_recv_{true};
         std::atomic<bool> sendable_{true};
 
         std::shared_ptr<std::function<void(int)>> async_con_cb_;
+        BufferRaw::Ptr read_buffer_;
+        SockFD::Ptr sock_fd_;
+        EventPoller::Ptr poller_;
+        std::mutex sock_fd_lock_;
 
-        
+        OnErrorCB on_err_;
+        OnReadCB on_read_;
+        OnFlushCB on_flush_;
+        OnAcceptCB on_accept_;
+        OnCreateSocketCB on_before_accept_;
+        std::mutex event_lock_;
+
+        List<BufferSock::Ptr> send_buf_waiting_;
+        std::mutex send_buf_waiting_lock_;
+        List<BufferList::Ptr> send_buf_sending_;
+        std::mutex send_buf_sending_lock_;
     };
 
 } // namespace cyberweb
