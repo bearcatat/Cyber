@@ -10,6 +10,8 @@
 
 #include "onceToken.h"
 
+
+
 namespace cyberweb
 {
     class noncopyable
@@ -149,7 +151,7 @@ namespace cyberweb
         return true;
     }
 
-    uint64_t GetCurrentMillisecond(bool system_time)
+    uint64_t GetCurrentMillisecond(bool system_time=false)
     {
         static bool flag = InitMillisecondThread();
         if (system_time)
@@ -159,7 +161,7 @@ namespace cyberweb
         return s_current_millisecond.load(std::memory_order_acquire);
     }
 
-    uint64_t GetCurrentMicrosecond(bool system_time)
+    uint64_t GetCurrentMicrosecond(bool system_time=false)
     {
         static bool flag = InitMillisecondThread();
         if (system_time)

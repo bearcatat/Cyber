@@ -146,7 +146,7 @@ namespace cyberweb
     class TaskCancelableImp;
 
     template <class R, class... ArgTypes>
-    class TaskCancelableImp<R(ArgTypes)> : public TaskCancelable
+    class TaskCancelableImp<R(ArgTypes...)> : public TaskCancelable
     {
     public:
         typedef std::shared_ptr<TaskCancelableImp> Ptr;
@@ -259,6 +259,7 @@ namespace cyberweb
         TaskExecutor(uint64_t max_size = 32, uint64_t max_usec = 2 * 1000 * 1000) : ThreadLoadCounter(max_size, max_usec) {}
         ~TaskExecutor() {}
     };
+    
 
     class TaskExecutorGetter
     {
