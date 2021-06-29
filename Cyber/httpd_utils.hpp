@@ -9,7 +9,7 @@
 
 using std::string;
 
-namespace cyberweb
+namespace cyber
 {
     void AnalyzeRequestLine(char *buff, string &method, string &url, string &version)
     {

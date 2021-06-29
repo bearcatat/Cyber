@@ -14,9 +14,9 @@
 
 #define ToPoller(event) (((event)&EPOLLIN) ? EVENT_READ : 0) | (((event)&EPOLLOUT) ? EVENT_WRITE : 0) | (((event)&EPOLLHUP) ? EVENT_ERROR : 0) | (((event)&EPOLLERR) ? EVENT_ERROR : 0)
 
-namespace cyberweb
+namespace cyber
 {
-    EventPoller *EventPoller::Instance()
+    EventPoller &EventPoller::Instance()
     {
         return *(EventPollerPool::Instance().GetFirstPoller());
     }

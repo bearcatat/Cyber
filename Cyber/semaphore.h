@@ -5,7 +5,7 @@
 #include <mutex>
 #include <condition_variable>
 
-namespace cyberweb
+namespace cyber
 {
     class Semaphore
     {

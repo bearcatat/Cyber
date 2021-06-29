@@ -8,7 +8,7 @@
 #include "util.h"
 #include "buffer.h"
 
-namespace cyberweb
+namespace cyber
 {
     BufferSock::BufferSock(Buffer::Ptr buffer, sockaddr *addr = nullptr, int addr_len = 0, OnResult cb = nullptr)
     {

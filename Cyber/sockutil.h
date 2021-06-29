@@ -8,7 +8,7 @@
 #include <string.h>
 #include <sys/unistd.h>
 
-namespace cyberweb
+namespace cyber
 {
     class SockUtil
     {

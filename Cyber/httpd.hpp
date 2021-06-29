@@ -18,7 +18,7 @@ using std::string;
 #define DEFAULT_MAXLINK 2048
 #define BUFFSIZE 2048
 
-namespace cyberweb
+namespace cyber
 {
     class HTTPD
     {

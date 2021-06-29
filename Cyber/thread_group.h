@@ -5,7 +5,7 @@
 #include <thread>
 #include <memory>
 
-namespace cyberweb
+namespace cyber
 {
     class ThreadGroup
     {

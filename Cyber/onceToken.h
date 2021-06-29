@@ -4,7 +4,7 @@
 #include <functional>
 #include "util.h"
 
-namespace cyberweb
+namespace cyber
 {
     class OnceToken : public noncopyable
     {

@@ -2,7 +2,7 @@
 #define CYBER_CONFIG
 #include <map>
 
-namespace cyberweb
+namespace cyber
 {
     typedef std::map<std::string, std::string> Header;
     typedef std::map<std::string, std::string> ContentTypeMap;

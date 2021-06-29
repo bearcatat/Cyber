@@ -11,7 +11,7 @@
 #include "thread_pool.h"
 #include "pipe_wrap.h"
 
-namespace cyberweb
+namespace cyber
 {
     typedef enum
     {
@@ -32,7 +32,7 @@ namespace cyberweb
         typedef std::shared_ptr<EventPoller> Ptr;
         ~EventPoller();
 
-        static EventPoller *Instance();
+        static EventPoller &Instance();
 
         int AddEvent(int fd, int event, PollEventCB cb);
 
@@ -111,8 +111,7 @@ namespace cyberweb
 
         EventPoller::Ptr GetPoller();
 
-        void PreferCurrentThread(bool flag=true);
-
+        void PreferCurrentThread(bool flag = true);
 
     private:
         EventPollerPool(/* args */);

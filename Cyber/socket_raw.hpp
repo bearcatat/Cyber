@@ -12,7 +12,7 @@
 #include <arpa/inet.h>
 #include <string>
 
-namespace cyberweb
+namespace cyber
 {
     class Connection
     {

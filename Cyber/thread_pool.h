@@ -8,7 +8,7 @@
 #include "thread_group.h"
 #include "task_queue.h"
 
-namespace cyberweb
+namespace cyber
 {
     class ThreadPool : public TaskExecutor
     {

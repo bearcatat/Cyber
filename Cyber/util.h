@@ -7,12 +7,11 @@
 #include <thread>
 #include <iostream>
 #include <unistd.h>
+#include <linux/limits.h>
 
 #include "onceToken.h"
 
-
-
-namespace cyberweb
+namespace cyber
 {
     class noncopyable
     {
@@ -151,7 +150,7 @@ namespace cyberweb
         return true;
     }
 
-    uint64_t GetCurrentMillisecond(bool system_time=false)
+    uint64_t GetCurrentMillisecond(bool system_time = false)
     {
         static bool flag = InitMillisecondThread();
         if (system_time)
@@ -161,7 +160,7 @@ namespace cyberweb
         return s_current_millisecond.load(std::memory_order_acquire);
     }
 
-    uint64_t GetCurrentMicrosecond(bool system_time=false)
+    uint64_t GetCurrentMicrosecond(bool system_time = false)
     {
         static bool flag = InitMillisecondThread();
         if (system_time)
@@ -169,6 +168,37 @@ namespace cyberweb
             return s_current_microsecond_system.load(std::memory_order_acquire);
         }
         return s_current_microsecond.load(std::memory_order_acquire);
+    }
+
+    std::string ExePath()
+    {
+        char buffer[PATH_MAX * 2 + 1] = {0};
+        int n = -1;
+        n = readlink("/proc/self/exe", buffer, sizeof(buffer));
+
+        std::string file_path;
+        if (n <= 0)
+        {
+            file_path = "./";
+        }
+        else
+        {
+            file_path = buffer;
+        }
+        return file_path;
+    }
+
+    std::string ExeName()
+    {
+        auto path = ExePath();
+        return path.substr(path.rfind('/') + 1);
+    }
+
+    struct tm GetLocalTime(time_t sec)
+    {
+        struct tm tm;
+        localtime_r(&sec, &tm);
+        return tm;
     }
 
 } // namespace cyberweb

@@ -5,7 +5,7 @@
 #include "util.h"
 #include "semaphore.h"
 
-namespace cyberweb
+namespace cyber
 {
     template <typename T>
     class TaskQueue

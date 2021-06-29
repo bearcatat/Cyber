@@ -8,7 +8,7 @@
 #include "sockutil.h"
 #include "uv_errno.h"
 
-namespace cyberweb
+namespace cyber
 {
 
     static SockException ToSockException(int error)
@@ -682,6 +682,149 @@ namespace cyberweb
     void Socket::SetSendFlags(int flags)
     {
         sendable_ = flags;
+    }
+
+    virtual bool Socket::CloneFromListenSocket(const Socket &other)
+    {
+        SockFD::Ptr sock;
+        {
+            LOCKGUARD(other.sock_fd_lock_);
+            if (!other.sock_fd_)
+            {
+                return false;
+            }
+            sock = std::make_shared<SockFD>(other.sock_fd_, poller_);
+        }
+        Listen(sock);
+    }
+
+    SockSender &SockSender::operator<<(const char *buf)
+    {
+        Send(buf, strlen(buf));
+        return *this;
+    }
+
+    SockSender &SockSender::operator<<(std::string buf)
+    {
+        Send(buf);
+        return *this;
+    }
+
+    SockSender &SockSender::operator<<(Buffer::Ptr buf)
+    {
+        Send(buf);
+        return *this;
+    }
+
+    ssize_t SockSender::Send(std::string buf)
+    {
+        auto buffer = BufferRaw::Create();
+        buffer->assign(buf.c_str(), buf.size());
+        return Send(std::move(buffer));
+    }
+
+    ssize_t SockSender::Send(const char *buf, size_t size = 0)
+    {
+        auto buffer = BufferRaw::Create();
+        buffer->assign(buf, size);
+        return Send(std::move(buffer));
+    }
+
+    SocketHelper::SocketHelper(const Socket::Ptr &sock)
+    {
+        SetSocket(sock);
+        SetOnCreateSocket(nullptr);
+    }
+    SocketHelper::~SocketHelper() override
+    {
+    }
+
+    const EventPoller::Ptr &SocketHelper::GetPoller() const
+    {
+        return poller_;
+    }
+    void SocketHelper::SetSendFlushFlag(bool try_flush)
+    {
+        try_flush_ = try_flush;
+    }
+    void SocketHelper::SetSendFlags(int flags)
+    {
+        if (!sock_)
+        {
+            return;
+        }
+        sock_->SetSendFlags(flags);
+    }
+    bool SocketHelper::IsSocketBusy() const
+    {
+        if (!sock_)
+        {
+            return true;
+        }
+        return sock_->IsSocketBusy();
+    }
+    void SocketHelper::SetOnCreateSocket(Socket::OnCreateSocketCB cb)
+    {
+        if (cb)
+        {
+            on_create_socket_ = std::move(cb);
+        }
+        else
+        {
+            on_create_socket_ = [](const EventPoller::Ptr &poller)
+            { return Socket::CreateSocket(poller, false); }
+        }
+    }
+
+    Socket::Ptr SocketHelper::CreateSocket()
+    {
+        on_create_socket_(poller_);
+    }
+
+    Task::Ptr SocketHelper::Async(TaskIn task, bool may_sync = true) override
+    {
+        return poller_->Async(std::move(task), may_sync);
+    }
+
+    Task::Ptr SocketHelper::AsyncFirst(TaskIn task, bool may_sync = true) override
+    {
+        return poller_->AsyncFirst(std::move(task), may_sync);
+    }
+
+    ssize_t SocketHelper::Send(Buffer::Ptr buf) override
+    {
+        if (!sock_)
+        {
+            return -1;
+        }
+        return sock_->Send(std::move(buf), try_flush_);
+    }
+
+    void SocketHelper::Shutdown(const SockException &ex = SockException(ERR_SHUTDOWN, "self shutdown")) override
+    {
+        sock_->EmitError(ex);
+    }
+
+    void SocketHelper::SetPoller(const EventPoller::Ptr &poller)
+    {
+        poller_ = poller;
+    }
+
+    void SocketHelper::SetSocket(const Socket::Ptr &sock)
+    {
+        peer_port_ = 0;
+        local_port_ = 0;
+        peer_ip_.clear();
+        local_ip_.clear();
+        sock_ = sock;
+        if (sock_)
+        {
+            poller_ = sock_->GetPoller();
+        }
+    }
+    const Socket::Ptr SocketHelper::GetSocket() const
+    {
+        return sock_;
     }
 
 } // namespace cyberweb

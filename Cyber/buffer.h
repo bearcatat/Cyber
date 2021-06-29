@@ -11,7 +11,7 @@
 
 #include "util.h"
 
-namespace cyberweb
+namespace cyber
 {
     class Buffer : public noncopyable
     {

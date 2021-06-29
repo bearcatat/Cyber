@@ -11,7 +11,7 @@ int main(int argc, char const *argv[])
 {
     try
     {
-        cyberweb::HTTPD http_server(15668);
+        cyber::HTTPD http_server(15668);
         while (true)
         {
             signal(SIGINT, StopServerRunning);

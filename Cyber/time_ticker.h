@@ -4,18 +4,35 @@
 #include <inttypes.h>
 
 #include "util.h"
+#include "logger.h"
 
-namespace cyberweb
+namespace cyber
 {
     class Ticker
     {
     public:
-        Ticker(uint64_t min_ms = 0)
+        Ticker(uint64_t min_ms = 0, LogContextCapturer ctx = LogContextCapturer(Logger::Instance(), LWARN, __FILE__, "", __LINE__), bool print_log = false) : ctx_(std::move(ctx))
         {
+            if (!print_log)
+            {
+                ctx_.Clear();
+            }
             created_ = begin_ = GetCurrentMillisecond();
             min_ms_ = min_ms;
         }
-        ~Ticker(){};
+        ~Ticker()
+        {
+            uint64_t tm = CreatedTime();
+            if (tm > min_ms_)
+            {
+                ctx_ << "take time:" << tm << "ms"
+                     << ",thread may be overloaded";
+            }
+            else
+            {
+                ctx_.Clear();
+            }
+        };
 
         uint64_t EleapsedTime() const
         {
@@ -36,6 +53,7 @@ namespace cyberweb
         uint64_t min_ms_;
         uint64_t begin_;
         uint64_t created_;
+        LogContextCapturer ctx_;
     };
 
     class SmoothTicker

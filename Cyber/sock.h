@@ -16,7 +16,7 @@
 #define SOCKET_DEFAULE_FLAGS (MSG_NOSIGNAL | MSG_DONTWAIT)
 #define SEND_TIME_OUT_SEC 10
 
-namespace cyberweb
+namespace cyber
 {
     typedef enum
     {
@@ -72,27 +72,44 @@ namespace cyberweb
         std::string err_msg_;
         int custom_code_;
     };
+
+    class SockNum
+    {
+    public:
+        typedef std::shared_ptr<SockNum> Ptr;
+        SockNum(int fd) : fd_(fd){};
+        ~SockNum() { close(fd_); }
+        int GetFD() cosnt { return fd_; }
+
+    private:
+        int fd_;
+    };
+
     class SockFD : public noncopyable
     {
     public:
         typedef std::shared_ptr<SockFD> Ptr;
         SockFD(int fd, EventPoller::Ptr poller)
         {
-            fd_ = fd;
+            fd_ = std::make_shared<SockNum>(fd);
+            poller_ = poller;
+        }
+        SockFD(SockFD::Ptr other, EventPoller::Ptr poller)
+        {
+            fd_ = other->fd_;
             poller_ = poller;
         }
         ~SockFD()
         {
             poller_->DelEvent(fd_);
-            close(fd_);
         }
         int GetFd() const
         {
-            return fd_;
+            return fd_->GetFD();
         }
 
     private:
-        int fd_;
+        SockNum::Ptr fd_;
         EventPoller::Ptr poller_;
     };
 
@@ -114,7 +131,7 @@ namespace cyberweb
 
         virtual void Connect(const string &ip, uint16_t port, OnErrorCB con_cb, float timeout_sec = 5);
 
-        virtual bool Listen(uint16_t port, const string &local_ip, int backlog = 1024);
+        virtual bool Listen(uint16_t port, const std::string &local_ip, int backlog = 1024);
 
         virtual void SetOnRead(OnReadCB cb);
         virtual void SetOnError(OnErrorCB cb);
@@ -134,6 +151,8 @@ namespace cyberweb
         virtual bool IsSocketBusy() const;
         virtual const EventPoller::Ptr GetPoller() const;
         virtual void SetSendFlags(int flags = SOCKET_DEFAULE_FLAGS);
+
+        virtual bool CloneFromListenSocket(const Socket &other);
 
         virtual void CLoseSock();
         virtual void GetSendBufferCount();
@@ -176,6 +195,71 @@ namespace cyberweb
         std::mutex send_buf_waiting_lock_;
         List<BufferList::Ptr> send_buf_sending_;
         std::mutex send_buf_sending_lock_;
+    };
+
+    class SockSender
+    {
+    public:
+        SockSender() = default;
+        virtual ~SockSender() = default;
+        virtual ssize_t Send(Buffer::Ptr buf) = 0;
+        virtual void Shutdown(const SockException &ex = SockException(ERR_SHUTDOWN, "self shutdown")) = 0;
+
+        SockSender &operator<<(const char *buf);
+        SockSender &operator<<(std::string buf);
+        SockSender &operator<<(Buffer::Ptr buf);
+
+        template <typename T>
+        SockSender &operator<<(T &&buf)
+        {
+            std::ostringstream ss;
+            ss << std::forward<T>(buf);
+            Send(ss.str());
+            return *this;
+        }
+        ssize_t Send(std::string buf);
+        ssize_t Send(const char *buf, size_t size = 0);
+    };
+
+    class SocketHelper : public SockSender, public TaskExecutorInterface
+    {
+    public:
+        SocketHelper(const Socket::Ptr &sock);
+        ~SocketHelper() override;
+
+        const EventPoller::Ptr &GetPoller() const;
+
+        void SetSendFlushFlag(bool try_flush);
+
+        void SetSendFlags(int flags);
+
+        bool IsSocketBusy() const;
+
+        void SetOnCreateSocket(Socket::OnCreateSocketCB cb);
+
+        Socket::Ptr CreateSocket();
+
+        Task::Ptr Async(TaskIn task, bool may_sync = true) override;
+        Task::Ptr AsyncFirst(TaskIn task, bool may_sync = true) override;
+
+        ssize_t Send(Buffer::Ptr buf) override;
+        void Shutdown(const SockException &ex = SockException(ERR_SHUTDOWN, "self shutdown")) override;
+
+    protected:
+        void SetPoller(const EventPoller::Ptr &poller);
+        void SetSocket(const Socket::Ptr &sock);
+        const Socket::Ptr GetSocket() const;
+
+    private:
+        /* data */
+        bool try_flush_ = true;
+        uint16_t peer_port_ = 0;
+        uint16_t local_port_ = 0;
+        std::string peer_ip_;
+        std::string local_ip_;
+        Socket::Ptr sock_;
+        EventPoller::Ptr poller_;
+        Socket::OnCreateSocketCB on_create_socket_;
     };
 
 } // namespace cyberweb

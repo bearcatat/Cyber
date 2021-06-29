@@ -14,7 +14,7 @@
         fd = -1;    \
     }
 
-namespace cyberweb
+namespace cyber
 {
     class PipeWrap
     {

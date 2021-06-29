@@ -12,7 +12,7 @@
 
 #define LOCKGUARD(mtx) std::lock_guard(decltype(mtx)) Guard(mtx)
 
-namespace cyberweb
+namespace cyber
 {
     class ThreadLoadCounter
     {

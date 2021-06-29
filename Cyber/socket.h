@@ -8,7 +8,7 @@
 // #include "util.h"
 // #include "poll.h"
 
-namespace cyberweb
+namespace cyber
 {
     typedef enum
     {
