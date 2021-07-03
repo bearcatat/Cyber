@@ -15,7 +15,7 @@
 #include <mutex>
 
 #include "util.h"
-#include "semaphore.h"
+#include "../Thread/semaphore.h"
 
 namespace cyber
 {

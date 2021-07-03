@@ -6,8 +6,8 @@
 
 #include "sock.h"
 #include "sockutil.h"
-#include "uv_errno.h"
-#include "work_thread_pool.h"
+#include "../Util/uv_errno.h"
+#include "../Thread/work_thread_pool.h"
 
 namespace cyber
 {

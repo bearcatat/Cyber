@@ -7,9 +7,9 @@
 #include <vector>
 #include <thread>
 
-#include "util.h"
-#include "time_ticker.h"
-#include "onceToken.h"
+#include "../Util/util.h"
+#include "../Util/time_ticker.h"
+#include "../Util/onceToken.h"
 
 #define LOCKGUARD(mtx) std::lock_guard<decltype(mtx)> Guard(mtx)
 

@@ -4,8 +4,8 @@
 #include <stdexcept>
 #include <unistd.h>
 
-#include "uv_errno.h"
-#include "sockutil.h"
+#include "../Util/uv_errno.h"
+#include "../Socket/sockutil.h"
 
 #define CloseFD(fd) \
     if (fd != -1)   \
