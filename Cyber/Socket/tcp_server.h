@@ -142,11 +142,9 @@ namespace cyber
             sock->SetOnError(
                 [weak_self, weak_session, ptr](const SockException &err)
                 {
-                    ErrorL << "emmit error0";
                     OnceToken once(
                         nullptr, [weak_self, weak_session, ptr]()
                         {
-                            ErrorL << "once delete";
                             auto strong_self = weak_self.lock();
                             if (!strong_self)
                             {
@@ -164,19 +162,22 @@ namespace cyber
                                     {
                                         /* code */
                                         auto strong_self = weak_self.lock();
+                                        if (!strong_self)
+                                        {
+                                            return;
+                                        }
                                         if (strong_self->is_on_manager)
                                         {
                                             WarnL << "is_on_manager";
+                                            strong_self->on_manager_delete.push_back(ptr);
+                                            return;
                                         }
-                                        if (strong_self)
-                                        {
-                                            strong_self->session_map_.erase(ptr);
-                                        }
-                                    });
+                                        strong_self->session_map_.erase(ptr);
+                                    },
+                                    false);
                             }
                         });
                     auto strong_session = weak_session.lock();
-                    ErrorL << "emmit error1";
                     if (strong_session)
                     {
                         strong_session->OnError(err);
@@ -237,6 +238,11 @@ namespace cyber
                 [&]()
                 {
                     is_on_manager = false;
+                    for (auto ptr : on_manager_delete)
+                    {
+                        session_map_.erase(ptr);
+                    }
+                    on_manager_delete.clear();
                 });
             try
             {
@@ -266,6 +272,7 @@ namespace cyber
         std::unordered_map<SessionHelper *, SessionHelper::Ptr> session_map_;
         std::function<SessionHelper::Ptr(const TCPServer::Ptr &server, const Socket::Ptr &)> session_alloc_;
         std::unordered_map<EventPoller *, Ptr> cloned_server_;
+        std::vector<SessionHelper *> on_manager_delete;
     };
 
 } // namespace cyberweb

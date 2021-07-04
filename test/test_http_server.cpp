@@ -1,19 +1,25 @@
-#include "../Cyber/session.h"
-#include "../Cyber/sock.h"
-#include "../Cyber/logger.h"
+#include <unistd.h>
+#include <signal.h>
 
-class HTTPSession : cyber::TCPSession
+#include "../Cyber/Util/logger.h"
+#include "../Cyber/Socket/tcp_server.h"
+#include "../Cyber/Socket/sock.h"
+#include "../Cyber/Util/time_ticker.h"
+#include "../Cyber/HTTP/http_session.h"
+
+int main(int argc, char const *argv[])
 {
-private:
-    /* data */
-public:
-    HTTPSession(cyber::Socket::Ptr &sock) : cyber::TCPSession(sock) {}
-    ~HTTPSession()
-    {
-        DebugL;
-    }
-    void OnRecv(const cyber::Buffer::Ptr &buf) override
-    {
-        
-    }
-};
+    cyber::Logger::Instance().Add(std::make_shared<cyber::ConsoleChannel>());
+    cyber::Logger::Instance().SetWriter(std::make_shared<cyber::AsyncLogWriter>());
+
+    TraceL << "server start";
+    cyber::TCPServer::Ptr server(new cyber::TCPServer());
+    server->Start<cyber::HTTPSession>(16557);
+
+    static cyber::Semaphore sem;
+    signal(SIGINT, [](int)
+           { sem.Post(); });
+    sem.Wait();
+
+    return 0;
+}

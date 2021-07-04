@@ -331,9 +331,7 @@ namespace cyber
         std::lock_guard<std::recursive_mutex> gurad(event_lock_);
         try
         {
-            DebugL<<"err before";
             on_err_(err);
-            DebugL<<"err after";
         }
         catch (std::exception &ex)
         {
@@ -599,7 +597,6 @@ namespace cyber
                 return true;
             } while (0);
         }
-
         int fd = sock->GetFd();
         while (!send_buf_sending_tmp.empty())
         {
@@ -609,6 +606,7 @@ namespace cyber
             {
                 if (subbuffer->Empty())
                 {
+                    send_buf_sending_tmp.pop_front();
                     continue;
                 }
                 if (!poller_thread)

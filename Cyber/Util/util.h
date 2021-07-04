@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <linux/limits.h>
+#include <vector>
 
 namespace cyber
 {
@@ -138,6 +139,9 @@ namespace cyber
 
     struct tm GetLocalTime(time_t sec);
 
+    std::vector<std::string> split(const std::string &s, const char *delim);
+    std::string &trim(std::string &s, const std::string &chars = " \t\n\r");
+    std::string trim(std::string &&s, const std::string &chars = " \t\n\r");
 } // namespace cyberweb
 
 #endif // CYBER_UTIL_H

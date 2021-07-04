@@ -7,6 +7,7 @@
 
 #include "../Util/util.h"
 #include "buffer.h"
+#include "../Util/logger.h"
 
 namespace cyber
 {

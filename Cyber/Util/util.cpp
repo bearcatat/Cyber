@@ -3,6 +3,7 @@
 
 #include "util.h"
 #include "onceToken.h"
+#include "string.h"
 
 namespace cyber
 {
@@ -99,6 +100,52 @@ namespace cyber
             file_path = buffer;
         }
         return file_path;
+    }
+    std::vector<std::string> split(const std::string &s, const char *delim)
+    {
+        std::vector<std::string> ret;
+        size_t last = 0;
+        auto index = s.find(delim, last);
+        while (index != std::string::npos)
+        {
+            if (index - last > 0)
+            {
+                ret.push_back(s.substr(last, index - last));
+            }
+            last = index + strlen(delim);
+            index = s.find(delim, last);
+        }
+        if (!s.size() || s.size() - last > 0)
+        {
+            ret.push_back(s.substr(last));
+        }
+        return ret;
+    }
+
+#define TRIM(s, chars)                                         \
+    do                                                         \
+    {                                                          \
+        std::string map(0xFF, '\0');                           \
+        for (auto &ch : chars)                                 \
+        {                                                      \
+            map[(unsigned char &)ch] = '\1';                   \
+        }                                                      \
+        while (s.size() && map.at((unsigned char &)s.back()))  \
+            s.pop_back();                                      \
+        while (s.size() && map.at((unsigned char &)s.front())) \
+            s.erase(0, 1);                                     \
+    } while (0);
+
+    //去除前后的空格、回车符、制表符
+    std::string &trim(std::string &s, const std::string &chars)
+    {
+        TRIM(s, chars);
+        return s;
+    }
+    std::string trim(std::string &&s, const std::string &chars)
+    {
+        TRIM(s, chars);
+        return std::move(s);
     }
 } // namespace cyber
 
