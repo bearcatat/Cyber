@@ -1,0 +1,337 @@
+[34m2021-07-05 21:37:19.600 T test_http_server [3384-140450949535552] test_http_server.cpp : 15 main | server start[0m
+[32m2021-07-05 21:37:19.600 D test_http_server [3384-140450932745984] poller.cpp : 250 RunLoop | New Thread id:140450932745984[0m
+[32m2021-07-05 21:37:19.601 D test_http_server [3384-140450924353280] poller.cpp : 250 RunLoop | New Thread id:140450924353280[0m
+[32m2021-07-05 21:37:19.601 D test_http_server [3384-140450915960576] poller.cpp : 250 RunLoop | New Thread id:140450915960576[0m
+[32m2021-07-05 21:37:19.601 D test_http_server [3384-140450907567872] poller.cpp : 250 RunLoop | New Thread id:140450907567872[0m
+[32m2021-07-05 21:37:19.602 D test_http_server [3384-140450899175168] poller.cpp : 250 RunLoop | New Thread id:140450899175168[0m
+[32m2021-07-05 21:37:19.602 D test_http_server [3384-140450890782464] poller.cpp : 250 RunLoop | New Thread id:140450890782464[0m
+[32m2021-07-05 21:37:19.602 D test_http_server [3384-140450882389760] poller.cpp : 250 RunLoop | New Thread id:140450882389760[0m
+[32m2021-07-05 21:37:19.603 D test_http_server [3384-140450396632832] poller.cpp : 250 RunLoop | New Thread id:140450396632832[0m
+[36m2021-07-05 21:37:19.603 I test_http_server [3384-140450949535552] poller.cpp : 396 EventPollerPool | create EventPoller size: 8[0m
+[34m2021-07-05 21:37:33.198 T test_http_server [3384-140450932745984] http_session.cpp : 16 HTTPSession | [0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] sock.cpp : 162 operator() | touch Read Event: 29[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] sock.cpp : 194 OnRead | on read: 29[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] sock.cpp : 196 OnRead | port :18420[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] http_session.cpp : 24 OnRecv | 140450932745984[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] http_session.cpp : 95 HandleReqGET | HandleReqGet[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] http_session.cpp : 105 operator() | SendBody[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] sock.cpp : 194 OnRead | on read: 29[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] sock.cpp : 196 OnRead | port :18420[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] sock.cpp : 207 OnRead | nread==-1: 29[0m
+[32m2021-07-05 21:37:33.198 D test_http_server [3384-140450932745984] sock.h : 84 ~SockNum | close fd: 29[0m
+[34m2021-07-05 21:37:33.198 T test_http_server [3384-140450932745984] http_session.cpp : 32 OnError | close connection after send http body completed.[0m
+[34m2021-07-05 21:37:33.198 T test_http_server [3384-140450932745984] http_session.cpp : 19 ~HTTPSession | [0m
+[34m2021-07-05 21:37:33.198 T test_http_server [3384-140450924353280] http_session.cpp : 16 HTTPSession | [0m
+[34m2021-07-05 21:37:33.198 T test_http_server [3384-140450932745984] http_session.cpp : 16 HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450915960576] http_session.cpp : 16 HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450924353280] http_session.cpp : 16 HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450932745984] http_session.cpp : 16 HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450915960576] http_session.cpp : 16 HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450915960576] http_session.cpp : 16 HTTPSession | [0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 162 operator() | touch Read Event: 29[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 194 OnRead | on read: 29[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 196 OnRead | port :18292[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] http_session.cpp : 24 OnRecv | 140450924353280[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] http_session.cpp : 95 HandleReqGET | HandleReqGet[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 162 operator() | touch Read Event: 30[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 194 OnRead | on read: 30[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] http_session.cpp : 105 operator() | SendBody[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 196 OnRead | port :18420[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 162 operator() | touch Read Event: 31[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] http_session.cpp : 24 OnRecv | 140450932745984[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 194 OnRead | on read: 31[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 196 OnRead | port :18164[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] http_session.cpp : 95 HandleReqGET | HandleReqGet[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] http_session.cpp : 24 OnRecv | 140450915960576[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] http_session.cpp : 95 HandleReqGET | HandleReqGet[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] http_session.cpp : 105 operator() | SendBody[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] http_session.cpp : 105 operator() | SendBody[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 194 OnRead | on read: 29[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 196 OnRead | port :18292[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 207 OnRead | nread==-1: 29[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 162 operator() | touch Read Event: 32[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 194 OnRead | on read: 32[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 196 OnRead | port :18292[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] http_session.cpp : 24 OnRecv | 140450924353280[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 194 OnRead | on read: 32[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 194 OnRead | on read: 31[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 195 OnRead | 
+ET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 194 OnRead | on read: 30[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 196 OnRead | port :18420[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 207 OnRead | nread==-1: 30[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 162 operator() | touch Read Event: 33[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 194 OnRead | on read: 33[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 196 OnRead | port :18420[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 196 OnRead | port :18292[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] http_session.cpp : 24 OnRecv | 140450932745984[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] http_session.cpp : 24 OnRecv | 140450924353280[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 194 OnRead | on read: 33[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] http_session.cpp : 95 HandleReqGET | HandleReqGet[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450907567872] http_session.cpp : 16 HTTPSession | [0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] http_session.cpp : 105 operator() | SendBody[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 195 OnRead | 
+ET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 196 OnRead | port :18164[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 207 OnRead | nread==-1: 31[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 196 OnRead | port :18420[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] http_session.cpp : 24 OnRecv | 140450932745984[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] http_session.cpp : 95 HandleReqGET | HandleReqGet[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] sock.cpp : 162 operator() | touch Read Event: 39[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 162 operator() | touch Read Event: 34[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] sock.cpp : 194 OnRead | on read: 39[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 194 OnRead | on read: 34[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] sock.cpp : 196 OnRead | port :18035[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 196 OnRead | port :18164[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] http_session.cpp : 24 OnRecv | 140450907567872[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] http_session.cpp : 105 operator() | SendBody[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] http_session.cpp : 24 OnRecv | 140450915960576[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 194 OnRead | on read: 34[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] http_session.cpp : 95 HandleReqGET | HandleReqGet[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 194 OnRead | on read: 32[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 195 OnRead | 
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 196 OnRead | port :18292[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.cpp : 207 OnRead | nread==-1: 32[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 195 OnRead | 
+ET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 196 OnRead | port :18164[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] http_session.cpp : 24 OnRecv | 140450915960576[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] http_session.cpp : 105 operator() | SendBody[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 194 OnRead | on read: 33[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 195 OnRead | 
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 196 OnRead | port :18420[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.cpp : 207 OnRead | nread==-1: 33[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] http_session.cpp : 95 HandleReqGET | HandleReqGet[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] http_session.cpp : 105 operator() | SendBody[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] sock.cpp : 194 OnRead | on read: 39[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] sock.cpp : 196 OnRead | port :18035[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] sock.cpp : 207 OnRead | nread==-1: 39[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 194 OnRead | on read: 34[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 195 OnRead | 
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 196 OnRead | port :18164[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 207 OnRead | nread==-1: 34[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.h : 84 ~SockNum | close fd: 30[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450907567872] sock.h : 84 ~SockNum | close fd: 39[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 162 operator() | touch Read Event: 35[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.h : 84 ~SockNum | close fd: 29[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 194 OnRead | on read: 35[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 195 OnRead | 
+[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 196 OnRead | port :18164[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.cpp : 200 OnRead | end of file:35[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450915960576] http_session.cpp : 32 OnError | end of file[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450915960576] http_session.cpp : 19 ~HTTPSession | [0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.h : 84 ~SockNum | close fd: 35[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450924353280] http_session.cpp : 32 OnError | close connection after send http body completed.[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450932745984] http_session.cpp : 32 OnError | close connection after send http body completed.[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450907567872] http_session.cpp : 32 OnError | close connection after send http body completed.[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450924353280] http_session.cpp : 19 ~HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450932745984] http_session.cpp : 19 ~HTTPSession | [0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450924353280] sock.h : 84 ~SockNum | close fd: 32[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450924353280] http_session.cpp : 32 OnError | close connection after send http body completed.[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450924353280] http_session.cpp : 19 ~HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450907567872] http_session.cpp : 19 ~HTTPSession | [0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450932745984] sock.h : 84 ~SockNum | close fd: 33[0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.h : 84 ~SockNum | close fd: 31[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450932745984] http_session.cpp : 32 OnError | close connection after send http body completed.[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450932745984] http_session.cpp : 19 ~HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450915960576] http_session.cpp : 32 OnError | close connection after send http body completed.[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450915960576] http_session.cpp : 19 ~HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450924353280] http_session.cpp : 16 HTTPSession | [0m
+[32m2021-07-05 21:37:33.199 D test_http_server [3384-140450915960576] sock.h : 84 ~SockNum | close fd: 34[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450915960576] http_session.cpp : 32 OnError | close connection after send http body completed.[0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450915960576] http_session.cpp : 19 ~HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450924353280] http_session.cpp : 16 HTTPSession | [0m
+[34m2021-07-05 21:37:33.199 T test_http_server [3384-140450932745984] http_session.cpp : 16 HTTPSession | [0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450924353280] http_session.cpp : 16 HTTPSession | [0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450932745984] http_session.cpp : 16 HTTPSession | [0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 162 operator() | touch Read Event: 29[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 194 OnRead | on read: 29[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 196 OnRead | port :18292[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] http_session.cpp : 24 OnRecv | 140450924353280[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] http_session.cpp : 95 HandleReqGET | HandleReqGet[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] http_session.cpp : 105 operator() | SendBody[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 194 OnRead | on read: 29[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 196 OnRead | port :18292[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 207 OnRead | nread==-1: 29[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.h : 84 ~SockNum | close fd: 29[0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450924353280] http_session.cpp : 32 OnError | close connection after send http body completed.[0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450924353280] http_session.cpp : 19 ~HTTPSession | [0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 162 operator() | touch Read Event: 32[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 194 OnRead | on read: 32[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 196 OnRead | port :18292[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 200 OnRead | end of file:32[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 162 operator() | touch Read Event: 33[0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450924353280] http_session.cpp : 32 OnError | end of file[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 194 OnRead | on read: 33[0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450924353280] http_session.cpp : 19 ~HTTPSession | [0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 195 OnRead | [0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 196 OnRead | port :18420[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 200 OnRead | end of file:33[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.h : 84 ~SockNum | close fd: 32[0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450932745984] http_session.cpp : 32 OnError | end of file[0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450932745984] http_session.cpp : 19 ~HTTPSession | [0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.h : 84 ~SockNum | close fd: 33[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 162 operator() | touch Read Event: 30[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 194 OnRead | on read: 30[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 195 OnRead | GET / HTTP/1.0
+Connection: close
+Host: 172.17.145.168:16557
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 196 OnRead | port :18292[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.cpp : 200 OnRead | end of file:30[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 162 operator() | touch Read Event: 31[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 194 OnRead | on read: 31[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 195 OnRead | [0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450924353280] http_session.cpp : 32 OnError | end of file[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 196 OnRead | port :18420[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.cpp : 200 OnRead | end of file:31[0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450924353280] http_session.cpp : 19 ~HTTPSession | [0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450932745984] http_session.cpp : 32 OnError | end of file[0m
+[34m2021-07-05 21:37:33.200 T test_http_server [3384-140450932745984] http_session.cpp : 19 ~HTTPSession | [0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450924353280] sock.h : 84 ~SockNum | close fd: 30[0m
+[32m2021-07-05 21:37:33.200 D test_http_server [3384-140450932745984] sock.h : 84 ~SockNum | close fd: 31[0m
+[36m2021-07-05 22:23:53.699 I test_http_server [3384-140450949535552] tcp_server.h : 27 ~TCPServer | close tcp server[0m
+[32m2021-07-05 22:23:53.700 D test_http_server [3384-140450949535552] sock.h : 84 ~SockNum | close fd: 28[0m
+[36m2021-07-05 22:23:53.700 I test_http_server [3384-140450949535552] poller.cpp : 77 ~EventPoller | 0x562de0c13b40:140450949535552[0m
+[36m2021-07-05 22:23:53.701 I test_http_server [3384-140450949535552] poller.cpp : 77 ~EventPoller | 0x562de0c141b0:140450949535552[0m
+[36m2021-07-05 22:23:53.702 I test_http_server [3384-140450949535552] poller.cpp : 77 ~EventPoller | 0x562de0c146e0:140450949535552[0m
+[36m2021-07-05 22:23:53.702 I test_http_server [3384-140450949535552] poller.cpp : 77 ~EventPoller | 0x562de0c14c10:140450949535552[0m
+[36m2021-07-05 22:23:53.703 I test_http_server [3384-140450949535552] poller.cpp : 77 ~EventPoller | 0x562de0c150e0:140450949535552[0m
+[36m2021-07-05 22:23:53.703 I test_http_server [3384-140450949535552] poller.cpp : 77 ~EventPoller | 0x562de0c15670:140450949535552[0m
+[36m2021-07-05 22:23:53.704 I test_http_server [3384-140450949535552] poller.cpp : 77 ~EventPoller | 0x562de0c15b70:140450949535552[0m
+[36m2021-07-05 22:23:53.705 I test_http_server [3384-140450949535552] poller.cpp : 77 ~EventPoller | 0x562de0c16070:140450949535552[0m
+[36m2021-07-05 22:23:53.705 I test_http_server [3384-thread::id of a non-executing thread] logger.cpp : 52 ~Logger | [0m

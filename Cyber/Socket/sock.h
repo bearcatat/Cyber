@@ -81,7 +81,7 @@ namespace cyber
         SockNum(int fd) : fd_(fd){};
         ~SockNum()
         {
-            DebugL << "Close: " << fd_;
+            DebugL << "close fd: " << fd_;
             close(fd_);
         }
         int GetFD() const { return fd_; }
@@ -132,7 +132,7 @@ namespace cyber
 
         typedef std::function<void(const Buffer::Ptr &buf, sockaddr *addr, int addr_len)> OnReadCB;
         typedef std::function<void(const SockException &err)> OnErrorCB;
-        typedef std::function<void(Socket::Ptr &sock)> OnAcceptCB;
+        typedef std::function<void(Socket::Ptr &sock, std::shared_ptr<void> &complete)> OnAcceptCB;
         typedef std::function<bool()> OnFlushCB;
         typedef std::function<Ptr(const EventPoller::Ptr &poller)> OnCreateSocketCB;
 
@@ -140,8 +140,6 @@ namespace cyber
         Socket(const EventPoller::Ptr &poller, bool enable_recursive_mutex = true);
 
         ~Socket();
-
-        virtual void Connect(const std::string &ip, sa_family_t family, uint16_t port, OnErrorCB con_cb, float timeout_sec = 5);
 
         virtual bool Listen(uint16_t port, const std::string &local_ip, int backlog = 1024);
 
@@ -176,7 +174,6 @@ namespace cyber
         int OnAccept(const SockFD::Ptr &sock, int event) noexcept;
         ssize_t OnRead(const SockFD::Ptr &sock) noexcept;
         void OnWriteAble(const SockFD::Ptr &sock);
-        void OnConnected(const SockFD::Ptr &sock, const OnErrorCB &cb);
         void OnFlushed(const SockFD::Ptr &p_sock);
         void StartWriteAbleEvent(const SockFD::Ptr &sock);
         void StopWriteAbleEvent(const SockFD::Ptr &sock);

@@ -6,7 +6,7 @@
 #include <memory>
 #include "http_const.h"
 
-#define KEEPALIVESECOND 30
+#define KEEPALIVESECOND 5
 #define KSENDBUFSIZE 2048
 
 namespace cyber
@@ -21,6 +21,7 @@ namespace cyber
     void HTTPSession::OnRecv(const Buffer::Ptr &buf)
     {
         ticker_.ResetTime();
+        DebugL << std::this_thread::get_id();
         Input(buf->Data(), buf->Size());
     }
 
@@ -40,7 +41,7 @@ namespace cyber
     {
         if (ticker_.EleapsedTime() > KEEPALIVESECOND * 1000)
         {
-            SafeShutdown(SockException(ERR_TIMEOUT, "session timeouted"));
+            Shutdown(SockException(ERR_TIMEOUT, "session timeouted"));
         }
     }
 
@@ -54,6 +55,7 @@ namespace cyber
             nullptr);
         parser_.Parse(data);
         std::string cmd = parser_.Method();
+        // DebugL << parser_.Url();
         auto it = s_func_map.find(cmd);
         if (it == s_func_map.end())
         {
@@ -71,7 +73,7 @@ namespace cyber
         catch (const std::exception &e)
         {
             ErrorL << e.what() << '\n';
-            SafeShutdown(SockException(ERR_SHUTDOWN, e.what()));
+            Shutdown(SockException(ERR_SHUTDOWN, e.what()));
         }
         parser_.Clear();
         return content_len;
@@ -90,30 +92,35 @@ namespace cyber
 
     void HTTPSession::HandleReqGET(ssize_t &content_len)
     {
+        DebugL << "HandleReqGet";
         HandleReqGETl(content_len, true);
     }
     void HTTPSession::HandleReqGETl(ssize_t &content_len, bool sendBody)
     {
         bool b_close = !strcasecmp(parser_["Connection"].data(), "close");
+        // GetSocket()->
         std::weak_ptr<HTTPSession> weak_self = std::dynamic_pointer_cast<HTTPSession>(shared_from_this());
         HTTPFileManager::OnAccessPath(
             *this, parser_, [weak_self, b_close](int code, const std::string &content_type, const StrCaseMap &response_header, const HTTPBody::Ptr &body)
             {
+                DebugL << "SendBody";
                 auto strong_self = weak_self.lock();
                 if (!strong_self)
                 {
                     return;
                 }
-                strong_self->Async(
-                    [weak_self, b_close, code, content_type, response_header, body]()
-                    {
-                        auto strong_self = weak_self.lock();
-                        if (!strong_self)
-                        {
-                            return;
-                        }
-                        strong_self->sendResponse(code, b_close, content_type.data(), response_header, body);
-                    });
+
+                strong_self->sendResponse(code, b_close, content_type.data(), response_header, body);
+                // strong_self->AsyncFirst(
+                //     [weak_self, b_close, code, content_type, response_header, body]()
+                //     {
+                //         auto strong_self = weak_self.lock();
+                //         if (!strong_self)
+                //         {
+                //             return;
+                //         }
+                //         strong_self->sendResponse(code, b_close, content_type.data(), response_header, body);
+                //     });
             });
     }
     void HTTPSession::sendNotFound(bool bClose)
@@ -221,6 +228,7 @@ namespace cyber
     static const std::string kContentLength = "Content-Length";
     static const std::string kAccessControlAllowOrigin = "Access-Control-Allow-Origin";
     static const std::string kAccessControlAllowCredentials = "Access-Control-Allow-Credentials";
+
     void HTTPSession::sendResponse(int code, bool bClose, const char *pcContentType, const HTTPSession::KeyValue &header, const HTTPBody::Ptr &body, bool no_content_length)
     {
         size_t size = 0;
@@ -285,10 +293,9 @@ namespace cyber
         {
             if (bClose)
             {
-                SafeShutdown(SockException(ERR_SHUTDOWN, StrPrinter() << "close connection after send http header completed with status code:" << code));
+                Shutdown(SockException(ERR_SHUTDOWN, StrPrinter() << "close connection after send http header completed with status code:" << code));
             }
         }
-
         auto body_data = std::make_shared<AsyncSenderData>(shared_from_this(), body, bClose);
         GetSocket()->SetOnFlush([body_data]()
                                 { return AsyncSender::OnSocketFlushed(body_data); });

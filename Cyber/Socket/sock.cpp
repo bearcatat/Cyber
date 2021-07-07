@@ -7,7 +7,6 @@
 #include "sock.h"
 #include "sockutil.h"
 #include "../Util/uv_errno.h"
-#include "../Thread/work_thread_pool.h"
 
 namespace cyber
 {
@@ -28,7 +27,7 @@ namespace cyber
         }
     }
 
-    static SockException GetSockErr(const SockFD::Ptr &sock, bool try_errno)
+    static SockException GetSockErr(const SockFD::Ptr &sock, bool try_errno = true)
     {
         int error = 0, len = sizeof(int);
         getsockopt(sock->GetFd(), SOL_SOCKET, SO_ERROR, (char *)&error, (socklen_t *)&len);
@@ -103,7 +102,7 @@ namespace cyber
         }
         else
         {
-            on_accept_ = [](Socket::Ptr &sock)
+            on_accept_ = [](Socket::Ptr &sock, std::shared_ptr<void> &)
             {
                 WarnL << "Socket not set acceptCB";
             };
@@ -142,100 +141,6 @@ namespace cyber
         close(fd);     \
     }
 
-    void Socket::Connect(const std::string &ip, sa_family_t family, uint16_t port, OnErrorCB con_cb_in, float timeout_sec)
-    {
-        CLoseSock();
-        std::weak_ptr<Socket> weak_self = shared_from_this();
-        auto con_cb = [con_cb_in, weak_self](const SockException &err)
-        {
-            auto strong_self = weak_self.lock();
-            if (!strong_self)
-            {
-                return;
-            }
-            strong_self->async_con_cb_ = nullptr;
-            if (err)
-            {
-                std::lock_guard<std::recursive_mutex> guard(strong_self->sock_fd_lock_);
-                strong_self->sock_fd_ = nullptr;
-            }
-            con_cb_in(err);
-        };
-
-        auto async_con_cb = std::make_shared<std::function<void(int)>>(
-            [weak_self, con_cb](int sock)
-            {
-                auto strong_self = weak_self.lock();
-                if (sock == -1 || !strong_self)
-                {
-                    if (!strong_self)
-                    {
-                        CLOSE_SOCK(sock);
-                    }
-                    else
-                    {
-                        con_cb(SockException(ERR_DNS));
-                    }
-                    return;
-                }
-                auto sock_fd = strong_self->MakeSock(sock);
-                std::weak_ptr<SockFD> weak_sock_fd = sock_fd;
-                int result = strong_self->poller_->AddEvent(
-                    sock, EVENT_WRITE, [weak_self, weak_sock_fd, con_cb](int event)
-                    {
-                        auto strong_self = weak_self.lock();
-                        auto strong_sock_fd = weak_sock_fd.lock();
-                        if (strong_self && strong_sock_fd)
-                        {
-                            strong_self->OnConnected(strong_sock_fd, con_cb);
-                        }
-                    });
-
-                if (result == -1)
-                {
-                    con_cb(SockException(ERR_OTHER, "add event to poller failed when start connect"));
-                    return;
-                }
-
-                std::lock_guard<std::recursive_mutex> guard(strong_self->sock_fd_lock_);
-                strong_self->sock_fd_ = sock_fd;
-            });
-
-        auto poller = poller_;
-        std::weak_ptr<std::function<void(int)>> weak_task = async_con_cb;
-
-        WorkThreadPool::Instance().GetExecutor()->Async(
-            [ip, family, port, weak_task, poller]()
-            {
-                int sock = SockUtil::Connect(ip.c_str(), family, port, true);
-                poller->Async(
-                    [sock, weak_task]()
-                    {
-                        auto strong_task = weak_task.lock();
-                        if (strong_task)
-                        {
-                            (*strong_task)(sock);
-                        }
-                        else
-                        {
-                            CLOSE_SOCK(sock);
-                        }
-                    });
-            });
-
-        async_con_cb_ = async_con_cb;
-    }
-
-    void Socket::OnConnected(const SockFD::Ptr &sock, const OnErrorCB &cb)
-    {
-        poller_->DelEvent(sock->GetFd());
-        if (!AttachEvent(sock))
-        {
-            cb(SockException(ERR_OTHER, "add event to poller failed when connected"));
-            return;
-        }
-    }
-
     bool Socket::AttachEvent(const SockFD::Ptr &sock)
     {
         std::weak_ptr<Socket> weak_self = shared_from_this();
@@ -253,6 +158,7 @@ namespace cyber
                 }
                 if (event & EVENT_READ)
                 {
+                    DebugL << "touch Read Event: " << strong_sock->GetFd();
                     strong_self->OnRead(strong_sock);
                 }
                 if (event & EVENT_WRITE)
@@ -261,7 +167,7 @@ namespace cyber
                 }
                 if (event & EVENT_ERROR)
                 {
-                    strong_self->EmitError(SockException(ERR_OTHER, "cb happened"));
+                    strong_self->EmitError(GetSockErr(strong_sock));
                 }
             });
 
@@ -282,17 +188,23 @@ namespace cyber
         {
             do
             {
+                // nread = recv(sock_fd, data, capacity, 0);
                 nread = recvfrom(sock_fd, data, capacity, 0, &addr, &addr_len);
             } while (-1 == nread && UV_EINTR == get_uv_error(true));
+            DebugL << "on read: " << sock_fd;
+            DebugL << data;
+            DebugL << "port :" << ((sockaddr_in *)&addr)->sin_port;
 
             if (nread == 0)
             {
+                DebugL << "end of file:" << sock_fd;
                 EmitError(SockException(ERR_EOF, "end of file"));
                 return ret;
             }
 
             if (nread == -1)
             {
+                DebugL << "nread==-1: " << sock_fd;
                 auto err = get_uv_error(true);
                 if (err != UV_EAGAIN)
                 {
@@ -305,9 +217,9 @@ namespace cyber
             data[nread] = '\0';
             read_buffer_->SetSize(nread);
 
-            std::lock_guard<std::recursive_mutex> guard(event_lock_);
             try
             {
+                std::lock_guard<std::recursive_mutex> guard(event_lock_);
                 on_read_(read_buffer_, &addr, sizeof(addr));
             }
             catch (std::exception &ex)
@@ -328,15 +240,26 @@ namespace cyber
             }
         }
         CLoseSock();
-        std::lock_guard<std::recursive_mutex> gurad(event_lock_);
-        try
-        {
-            on_err_(err);
-        }
-        catch (std::exception &ex)
-        {
-            ErrorL << "on err error: " << ex.what();
-        }
+        std::weak_ptr<Socket> weak_self = shared_from_this();
+        poller_->Async(
+            [weak_self, err]()
+            {
+                auto strong_self = weak_self.lock();
+                if (!strong_self)
+                {
+                    return;
+                }
+                std::lock_guard<std::recursive_mutex> gurad(strong_self->event_lock_);
+                try
+                {
+                    strong_self->on_err_(err);
+                }
+                catch (std::exception &ex)
+                {
+                    ErrorL << "on err error: " << ex.what();
+                }
+            });
+
         return true;
     }
 
@@ -404,8 +327,11 @@ namespace cyber
 
     void Socket::OnFlushed(const SockFD::Ptr &p_sock)
     {
-        std::lock_guard<std::recursive_mutex> guard(event_lock_);
-        bool flag = on_flush_();
+        bool flag;
+        {
+            std::lock_guard<std::recursive_mutex> guard(event_lock_);
+            flag = on_flush_();
+        }
         if (!flag)
         {
             SetOnFlush(nullptr);
@@ -491,7 +417,7 @@ namespace cyber
                 {
                     fd = (int)accept(sock->GetFd(), NULL, NULL);
                 } while (-1 == fd && UV_EINTR == get_uv_error(true));
-
+                DebugL << "accept: " << fd;
                 if (fd == -1)
                 {
                     int err = get_uv_error(true);
@@ -506,11 +432,17 @@ namespace cyber
                 }
 
                 SockUtil::SetNoBlocked(fd);
+                SockUtil::setNoDelay(fd);
+                SockUtil::setSendBuf(fd);
+                SockUtil::setRecvBuf(fd);
+                SockUtil::setCloseWait(fd);
+                SockUtil::setCloExec(fd);
+
                 Socket::Ptr peer_sock;
                 {
-                    std::lock_guard<std::recursive_mutex> guard(event_lock_);
                     try
                     {
+                        std::lock_guard<std::recursive_mutex> guard(event_lock_);
                         peer_sock = on_before_accept_(poller_);
                     }
                     catch (const std::exception &e)
@@ -528,30 +460,39 @@ namespace cyber
 
                 auto peer_sock_fd = peer_sock->SetPeerSock(fd);
 
+                std::shared_ptr<void> completed(
+                    nullptr, [peer_sock, peer_sock_fd](void *)
+                    {
+                        try
+                        {
+                            if (!peer_sock->AttachEvent(peer_sock_fd))
+                            {
+                                peer_sock->EmitError(SockException(ERR_EOF, "add event to poller failed when accept a socket"));
+                            }
+                        }
+                        catch (const std::exception &e)
+                        {
+                            ErrorL << e.what();
+                        }
+                    });
+
+                try
                 {
                     std::lock_guard<std::recursive_mutex> guard(event_lock_);
-                    try
-                    {
-                        on_accept_(peer_sock);
-                    }
-                    catch (const std::exception &e)
-                    {
-                        ErrorL << "socket accpet failed when on accept" << e.what() << '\n';
-                        continue;
-                    }
+                    on_accept_(peer_sock, completed);
                 }
-
-                if (!peer_sock->AttachEvent(peer_sock_fd))
+                catch (const std::exception &e)
                 {
-                    peer_sock->EmitError(SockException(ERR_EOF, "add event to poller failed when accept a socket"));
+                    ErrorL << "socket accpet failed when on accept" << e.what() << '\n';
+                    continue;
                 }
             }
 
             if (event & EVENT_ERROR)
             {
-                EmitError(SockException(ERR_OTHER, "listen error"));
-                ErrorL << "tcp server listen failed"
-                       << "\n";
+                auto ex = GetSockErr(sock);
+                EmitError(ex);
+                ErrorL << "tcp server listen failed" << ex.what();
                 return -1;
             }
         }
@@ -642,12 +583,12 @@ namespace cyber
     {
         bool empty_waiting, empty_sending;
         {
-            std::lock_guard<std::recursive_mutex> guard(send_buf_sending_lock_);
-            empty_sending = send_buf_sending_.empty();
-        }
-        {
             std::lock_guard<std::recursive_mutex> guard(send_buf_waiting_lock_);
             empty_waiting = send_buf_waiting_.empty();
+        }
+        {
+            std::lock_guard<std::recursive_mutex> guard(send_buf_sending_lock_);
+            empty_sending = send_buf_sending_.empty();
         }
         if (empty_sending && empty_waiting)
         {

@@ -8,7 +8,7 @@
 #include "../Util/util.h"
 
 #define EPOLL_SIZE 1024
-#define SOCKET_DEFAULT_BUF_SIZE 2048
+// #define SOCKET_DEFAULT_BUF_SIZE 2048
 
 #define ToEpoll(event) (((event)&EVENT_READ) ? EPOLLIN : 0) | (((event)&EVENT_WRITE) ? EPOLLOUT : 0) | (((event)&EVENT_ERROR) ? (EPOLLHUP | EPOLLERR) : 0) | (((event)&EVENT_LT) ? 0 : EPOLLET)
 
@@ -33,6 +33,7 @@ namespace cyber
             ErrorL << "create epoll fd failed: " << get_uv_errmsg();
             throw "create epoll fd fail!";
         }
+        SockUtil::setCloExec(epoll_fd_);
 
         logger_ = Logger::Instance().shared_from_this();
         loop_thread_id_ = std::this_thread::get_id();
@@ -73,12 +74,11 @@ namespace cyber
         }
         loop_thread_id_ = std::this_thread::get_id();
         OnPipeEvent();
-        InfoL << this << std::endl;
+        InfoL << this << ":" << loop_thread_id_ << std::endl;
     }
 
     int EventPoller::AddEvent(int fd, int event, PollEventCB cb)
     {
-        Ticker();
         if (!cb)
         {
             WarnL << "poller callback is null";
@@ -87,7 +87,7 @@ namespace cyber
         if (IsCurrentThread())
         {
             epoll_event ev = {0};
-            ev.events = ToEpoll(event);
+            ev.events = ToEpoll(event) | EPOLLEXCLUSIVE;
             ev.data.fd = fd;
             int ret = epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, fd, &ev);
             if (ret == 0)
@@ -104,7 +104,6 @@ namespace cyber
 
     int EventPoller::DelEvent(int fd, PollDelCB cb)
     {
-        Ticker();
         if (!cb)
         {
             cb = [](bool success) {};
@@ -129,7 +128,6 @@ namespace cyber
         epoll_event ev = {0};
         ev.events = ToEpoll(event);
         ev.data.fd = fd;
-        std::lock_guard<std::mutex> guard(lock_);
         return epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, fd, &ev);
     }
 
@@ -154,7 +152,7 @@ namespace cyber
 
         auto ret = std::make_shared<Task>(std::move(task));
         {
-            std::lock_guard<std::mutex> guard(mtx_task_);
+            LOCKGUARD(mtx_task_);
             if (first)
             {
                 list_task_.emplace_front(ret);
@@ -185,8 +183,8 @@ namespace cyber
             {
                 continue;
             }
-            err = get_uv_error();
-        } while (get_uv_error() != UV_EAGAIN);
+            err = get_uv_error(true);
+        } while (err != UV_EAGAIN);
 
         decltype(list_task_) list_swap;
         {
@@ -250,6 +248,7 @@ namespace cyber
             ThreadPool::SetPriority(priority_);
             LOCKGUARD(mtx_runing_);
             loop_thread_id_ = std::this_thread::get_id();
+            DebugL << "New Thread id:" << loop_thread_id_;
             if (regist_self)
             {
                 LOCKGUARD(s_all_poller_mtx);
@@ -311,8 +310,7 @@ namespace cyber
                 auto next_delay = (*(it->second))();
                 if (next_delay)
                 {
-                    //delay_task_map_.emplace(next_delay + GetCurrentMillisecond(), it->second);
-                    delay_task_map_.emplace(next_delay + GetCurrentMillisecond(), std::move(it->second));
+                    delay_task_map_.emplace(next_delay + now_time, std::move(it->second));
                 }
             }
             catch (const std::exception &e)

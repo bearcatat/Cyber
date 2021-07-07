@@ -45,7 +45,6 @@ namespace cyber
         {
             /* code */
             auto line = FindField(start, NULL, "\r\n");
-            DebugL << line.size() << ": " << line;
             if (line.size() == 0)
             {
                 break;

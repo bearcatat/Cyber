@@ -22,6 +22,8 @@ namespace cyber
             : max_size_(max_size), max_usec_(max_usec)
         {
             last_sleep_time_ = last_wake_time_ = GetCurrentMicrosecond();
+            max_size_ = max_size;
+            max_usec_ = max_usec;
         }
         ~ThreadLoadCounter() {}
 
@@ -219,38 +221,6 @@ namespace cyber
         {
             return Async(std::move(task), may_sync);
         }
-
-        virtual void Sync(TaskIn &task)
-        {
-            std::mutex lock;
-            auto ret = Async(
-                [&]()
-                {
-                    OnceToken token(nullptr, [&]()
-                                    { lock.unlock(); });
-                    task();
-                });
-            if (ret && *ret)
-            {
-                lock.lock();
-            }
-        }
-
-        virtual void SyncFirst(TaskIn &task)
-        {
-            std::mutex lock;
-            auto ret = AsyncFirst(
-                [&]()
-                {
-                    OnceToken token(nullptr, [&]()
-                                    { lock.unlock(); });
-                    task();
-                });
-            if (ret && *ret)
-            {
-                lock.lock();
-            }
-        }
     };
 
     class TaskExecutor : public ThreadLoadCounter, public TaskExecutorInterface
@@ -311,9 +281,10 @@ namespace cyber
         std::vector<int> GetExecutorLoad()
         {
             std::vector<int> vec(threads_.size());
-            for (int i = 0; i < threads_.size(); i++)
+            int i = 0;
+            for (auto &executor : threads_)
             {
-                vec[i] = threads_[i]->Load();
+                vec[i++] = executor->Load();
             }
             return vec;
         }
@@ -346,7 +317,7 @@ namespace cyber
 
     protected:
         template <typename FUN>
-        void CreateThreads(FUN &&fun, int threadnum = std::thread::hardware_concurrency)
+        void CreateThreads(FUN &&fun, int threadnum = std::thread::hardware_concurrency())
         {
             for (int i = 0; i < threadnum; i++)
             {

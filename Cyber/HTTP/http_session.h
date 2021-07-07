@@ -31,9 +31,6 @@ namespace cyber
     private:
         void HandleReqGET(ssize_t &content_len);
         void HandleReqGETl(ssize_t &content_len, bool sendBody);
-        // void HandleReqPOST(ssize_t &content_len);
-        // void HandleReqHEAD(ssize_t &content_len);
-        // void HandleReqOPTIONS(ssize_t &content_len);
         void sendNotFound(bool bClose);
         void sendResponse(int code, bool bClose, const char *pcContentType = nullptr,
                           const HTTPSession::KeyValue &header = HTTPSession::KeyValue(),

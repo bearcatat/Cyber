@@ -16,15 +16,23 @@ namespace cyber
         TCPServer(const EventPoller::Ptr &poller = nullptr) : Server(poller)
         {
             SetOnCreateSocket(nullptr);
-            socket_ = CreateSocket();
-            socket_->SetOnAccept(std::bind(&TCPServer::OnAcceptConnectionL, this, std::placeholders::_1));
-            socket_->SetOnBeforeAccept(std::bind(&TCPServer::OnBeforeAcceptConnectionL, this, std::placeholders::_1));
+            socket_ = CreateSocket(poller_);
+            socket_->SetOnAccept([this](Socket::Ptr &sock, std::shared_ptr<void> &complete)
+                                 {
+                                     auto ptr = sock->GetPoller().get();
+                                     auto server = getServer(ptr);
+                                     ptr->Async([server, sock, complete]()
+                                                { server->OnAcceptConnection(sock); });
+                                 });
+            socket_->SetOnBeforeAccept(
+                [this](const EventPoller::Ptr &poller)
+                { return OnBeforeAcceptConnection(poller); });
         }
         ~TCPServer()
         {
-            if (!cloned_ && socket_->GetFD() != -1)
+            if (!parent_ && socket_->GetFD() != -1)
             {
-                std::cout << "close tcp server" << std::endl;
+                InfoL << "close tcp server" << std::endl;
             }
             timer_.reset();
             socket_.reset();
@@ -54,6 +62,8 @@ namespace cyber
                         serverRef->CloneFrom(*this);
                     }
                 });
+
+            // cloned_server_[poller_.get()] = std::static_pointer_cast<TCPServer>(shared_from_this());
         }
 
         void SetOnCreateSocket(Socket::OnCreateSocketCB cb)
@@ -84,7 +94,7 @@ namespace cyber
         virtual Socket::Ptr OnBeforeAcceptConnection(const EventPoller::Ptr &poller)
         {
             assert(poller_->IsCurrentThread());
-            return CreateSocket();
+            return CreateSocket(EventPollerPool::Instance().GetPoller());
         }
 
         virtual void CloneFrom(const TCPServer &that)
@@ -109,7 +119,7 @@ namespace cyber
                     return true;
                 },
                 poller_);
-            cloned_ = true;
+            parent_ = &that;
         }
 
         virtual void OnAcceptConnection(const Socket::Ptr &sock)
@@ -157,6 +167,7 @@ namespace cyber
                             }
                             else
                             {
+                                WarnL << "is_on_manager";
                                 strong_self->poller_->Async(
                                     [weak_self, ptr]()
                                     {
@@ -169,8 +180,8 @@ namespace cyber
                                         if (strong_self->is_on_manager)
                                         {
                                             WarnL << "is_on_manager";
-                                            strong_self->on_manager_delete.push_back(ptr);
-                                            return;
+                                            // strong_self->on_manager_delete.push_back(ptr);
+                                            // return;
                                         }
                                         strong_self->session_map_.erase(ptr);
                                     },
@@ -186,11 +197,6 @@ namespace cyber
         }
 
     private:
-        Socket::Ptr OnBeforeAcceptConnectionL(const EventPoller::Ptr &poller)
-        {
-            return OnBeforeAcceptConnection(poller);
-        }
-
         void OnAcceptConnectionL(const Socket::Ptr &sock)
         {
             OnAcceptConnection(sock);
@@ -238,11 +244,11 @@ namespace cyber
                 [&]()
                 {
                     is_on_manager = false;
-                    for (auto ptr : on_manager_delete)
-                    {
-                        session_map_.erase(ptr);
-                    }
-                    on_manager_delete.clear();
+                    // for (auto ptr : on_manager_delete)
+                    // {
+                    //     session_map_.erase(ptr);
+                    // }
+                    // on_manager_delete.clear();
                 });
             try
             {
@@ -257,21 +263,32 @@ namespace cyber
             }
         }
 
-        Socket::Ptr CreateSocket()
+        Socket::Ptr CreateSocket(const EventPoller::Ptr &poller)
         {
-            return on_create_socket_(poller_);
+            return on_create_socket_(poller);
+        }
+
+        Ptr getServer(const EventPoller *poller) const
+        {
+            auto &ref = parent_ ? parent_->cloned_server_ : cloned_server_;
+            auto it = ref.find(poller);
+            if (it != ref.end())
+            {
+                return it->second;
+            }
+            return std::static_pointer_cast<TCPServer>(const_cast<TCPServer *>(parent_ ? parent_ : this)->shared_from_this());
         }
 
     private:
         /* data */
-        bool cloned_ = false;
         bool is_on_manager = false;
+        const TCPServer *parent_ = nullptr;
         Socket::Ptr socket_;
         std::shared_ptr<Timer> timer_;
         Socket::OnCreateSocketCB on_create_socket_;
         std::unordered_map<SessionHelper *, SessionHelper::Ptr> session_map_;
         std::function<SessionHelper::Ptr(const TCPServer::Ptr &server, const Socket::Ptr &)> session_alloc_;
-        std::unordered_map<EventPoller *, Ptr> cloned_server_;
+        std::unordered_map<const EventPoller *, Ptr> cloned_server_;
         std::vector<SessionHelper *> on_manager_delete;
     };
 
