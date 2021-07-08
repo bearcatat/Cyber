@@ -13,15 +13,16 @@ namespace cyber
 {
     HTTPSession::HTTPSession(const Socket::Ptr &sock) : TCPSession(sock)
     {
-        TraceL;
+        // TraceL;
         sock->SetTimeOutSecond(KEEPALIVESECOND);
     }
-    HTTPSession::~HTTPSession() { TraceL; };
+    HTTPSession::~HTTPSession(){
+        // TraceL;
+    };
 
     void HTTPSession::OnRecv(const Buffer::Ptr &buf)
     {
         ticker_.ResetTime();
-        DebugL << std::this_thread::get_id();
         Input(buf->Data(), buf->Size());
     }
 
@@ -41,7 +42,7 @@ namespace cyber
     {
         if (ticker_.EleapsedTime() > KEEPALIVESECOND * 1000)
         {
-            Shutdown(SockException(ERR_TIMEOUT, "session timeouted"));
+            // Shutdown(SockException(ERR_TIMEOUT, "session timeouted"));
         }
     }
 
@@ -55,7 +56,6 @@ namespace cyber
             nullptr);
         parser_.Parse(data);
         std::string cmd = parser_.Method();
-        // DebugL << parser_.Url();
         auto it = s_func_map.find(cmd);
         if (it == s_func_map.end())
         {
@@ -92,7 +92,6 @@ namespace cyber
 
     void HTTPSession::HandleReqGET(ssize_t &content_len)
     {
-        DebugL << "HandleReqGet";
         HandleReqGETl(content_len, true);
     }
     void HTTPSession::HandleReqGETl(ssize_t &content_len, bool sendBody)
@@ -103,24 +102,22 @@ namespace cyber
         HTTPFileManager::OnAccessPath(
             *this, parser_, [weak_self, b_close](int code, const std::string &content_type, const StrCaseMap &response_header, const HTTPBody::Ptr &body)
             {
-                DebugL << "SendBody";
                 auto strong_self = weak_self.lock();
                 if (!strong_self)
                 {
                     return;
                 }
 
-                strong_self->sendResponse(code, b_close, content_type.data(), response_header, body);
-                // strong_self->AsyncFirst(
-                //     [weak_self, b_close, code, content_type, response_header, body]()
-                //     {
-                //         auto strong_self = weak_self.lock();
-                //         if (!strong_self)
-                //         {
-                //             return;
-                //         }
-                //         strong_self->sendResponse(code, b_close, content_type.data(), response_header, body);
-                //     });
+                strong_self->AsyncFirst(
+                    [weak_self, b_close, code, content_type, response_header, body]()
+                    {
+                        auto strong_self = weak_self.lock();
+                        if (!strong_self)
+                        {
+                            return;
+                        }
+                        strong_self->sendResponse(code, b_close, content_type.data(), response_header, body);
+                    });
             });
     }
     void HTTPSession::sendNotFound(bool bClose)
@@ -177,6 +174,7 @@ namespace cyber
                     {
                         return;
                     }
+
                     session->Async(
                         [data, sendbuf]()
                         {

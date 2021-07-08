@@ -158,7 +158,6 @@ namespace cyber
                 }
                 if (event & EVENT_READ)
                 {
-                    DebugL << "touch Read Event: " << strong_sock->GetFd();
                     strong_self->OnRead(strong_sock);
                 }
                 if (event & EVENT_WRITE)
@@ -191,20 +190,15 @@ namespace cyber
                 // nread = recv(sock_fd, data, capacity, 0);
                 nread = recvfrom(sock_fd, data, capacity, 0, &addr, &addr_len);
             } while (-1 == nread && UV_EINTR == get_uv_error(true));
-            DebugL << "on read: " << sock_fd;
-            DebugL << data;
-            DebugL << "port :" << ((sockaddr_in *)&addr)->sin_port;
 
             if (nread == 0)
             {
-                DebugL << "end of file:" << sock_fd;
                 EmitError(SockException(ERR_EOF, "end of file"));
                 return ret;
             }
 
             if (nread == -1)
             {
-                DebugL << "nread==-1: " << sock_fd;
                 auto err = get_uv_error(true);
                 if (err != UV_EAGAIN)
                 {
@@ -398,9 +392,7 @@ namespace cyber
 
     bool Socket::Listen(uint16_t port, const std::string &local_ip, int backlog)
     {
-        DebugL<<"Listen begin";
         int sock = SockUtil::Listen(port, local_ip.c_str(), backlog);
-        DebugL<<"Listen wait";
         if (-1 == sock)
         {
             return false;
@@ -419,7 +411,6 @@ namespace cyber
                 {
                     fd = (int)accept(sock->GetFd(), NULL, NULL);
                 } while (-1 == fd && UV_EINTR == get_uv_error(true));
-                DebugL << "accept: " << fd;
                 if (fd == -1)
                 {
                     int err = get_uv_error(true);

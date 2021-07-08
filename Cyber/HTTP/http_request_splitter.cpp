@@ -23,6 +23,7 @@ namespace cyber
 
         const char *index = nullptr;
         remain_data_size_ = len;
+
         while (content_len_ == 0 && remain_data_size_ > 0 && (index = OnSearchPacketTail(ptr, remain_data_size_)) != nullptr)
         {
             if (index == ptr)

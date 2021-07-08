@@ -31,7 +31,6 @@ namespace cyber
                     f->close();
                 }
             });
-
         if (!file)
         {
             auto str_content_type = StrPrinter() << "text/html" << std::endl;

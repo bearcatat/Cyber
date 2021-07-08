@@ -167,7 +167,7 @@ namespace cyber
                             }
                             else
                             {
-                                WarnL << "is_on_manager";
+                                // WarnL << "is_on_manager";
                                 strong_self->poller_->Async(
                                     [weak_self, ptr]()
                                     {
@@ -177,12 +177,12 @@ namespace cyber
                                         {
                                             return;
                                         }
-                                        if (strong_self->is_on_manager)
-                                        {
-                                            WarnL << "is_on_manager";
-                                            // strong_self->on_manager_delete.push_back(ptr);
-                                            // return;
-                                        }
+                                        // if (strong_self->is_on_manager)
+                                        // {
+                                        //     WarnL << "is_on_manager";
+                                        //     // strong_self->on_manager_delete.push_back(ptr);
+                                        //     // return;
+                                        // }
                                         strong_self->session_map_.erase(ptr);
                                     },
                                     false);

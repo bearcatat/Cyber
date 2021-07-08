@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "../Util/util.h"
+#include "../Util/logger.h"
 
 namespace cyber
 {
@@ -86,6 +87,10 @@ namespace cyber
             memcpy(data_, data, size);
             data_[size] = 0;
             SetSize(size);
+        }
+        virtual size_t GetCapacity() const override
+        {
+            return capacity_;
         }
 
     protected:

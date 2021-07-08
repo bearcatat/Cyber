@@ -248,7 +248,6 @@ namespace cyber
             ThreadPool::SetPriority(priority_);
             LOCKGUARD(mtx_runing_);
             loop_thread_id_ = std::this_thread::get_id();
-            DebugL << "New Thread id:" << loop_thread_id_;
             if (regist_self)
             {
                 LOCKGUARD(s_all_poller_mtx);

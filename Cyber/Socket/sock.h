@@ -81,7 +81,6 @@ namespace cyber
         SockNum(int fd) : fd_(fd){};
         ~SockNum()
         {
-            DebugL << "close fd: " << fd_;
             close(fd_);
         }
         int GetFD() const { return fd_; }
