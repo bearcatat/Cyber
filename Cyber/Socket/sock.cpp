@@ -398,7 +398,9 @@ namespace cyber
 
     bool Socket::Listen(uint16_t port, const std::string &local_ip, int backlog)
     {
+        DebugL<<"Listen begin";
         int sock = SockUtil::Listen(port, local_ip.c_str(), backlog);
+        DebugL<<"Listen wait";
         if (-1 == sock)
         {
             return false;

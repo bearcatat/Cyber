@@ -12,6 +12,7 @@ int main(int argc, char const *argv[])
     cyber::Logger::Instance().Add(std::make_shared<cyber::ConsoleChannel>());
     cyber::Logger::Instance().SetWriter(std::make_shared<cyber::AsyncLogWriter>());
 
+
     TraceL << "server start";
     cyber::TCPServer::Ptr server(new cyber::TCPServer());
     server->Start<cyber::HTTPSession>(16557);

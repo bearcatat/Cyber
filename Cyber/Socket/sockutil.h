@@ -19,9 +19,11 @@ namespace cyber
     public:
         static int SetNoBlocked(int sock, bool noblock = true)
         {
-            int block_flag = noblock ? O_NONBLOCK : ~O_NONBLOCK;
-            int flags = fcntl(sock, F_GETFL, 0);
-            int ret = fcntl(sock, F_SETFL, flags & block_flag);
+            // int block_flag = noblock ? O_NONBLOCK : ~O_NONBLOCK;
+            // int flags = fcntl(sock, F_GETFL, 0);
+            // int ret = fcntl(sock, F_SETFL, flags & block_flag);
+            int ul = noblock;
+            int ret = ioctl(sock, FIONBIO, &ul);
             if (ret == -1)
             {
                 throw "non blocked failed";
